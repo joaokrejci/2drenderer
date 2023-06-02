@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <pthread.h>
 
 #include "renderer.h"
 
@@ -40,7 +41,7 @@ static void event_handler(SDL_Event event) {
   }
 }
 
-int main() {
+static void * start_routine(void * args) {
   scene_t scene;
   scene.load = load;
   scene.loop = loop;
@@ -49,4 +50,11 @@ int main() {
 
   init();
   start(scene);
+}
+
+int main() {
+  pthread_t render_thread;
+  pthread_create(&render_thread, NULL, start_routine, NULL);
+
+  pthread_join(render_thread, NULL);
 }

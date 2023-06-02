@@ -7,23 +7,7 @@
 
 #include <SDL2/SDL.h>
 #include "image.h"
-
-typedef struct color {
-  unsigned char r;
-  unsigned char g;
-  unsigned char b;
-  unsigned char a;
-} color_t;
-
-typedef struct position {
-  int x, y;
-} position_t;
-
-typedef struct sprite {
-  position_t position;
-  int width, height;
-  unsigned int *data;
-} sprite_t;
+#include "sprite.h"
 
 typedef struct scene {
   void (*load)(void);
@@ -33,10 +17,8 @@ typedef struct scene {
 } scene_t;
 
 void init();
-void start();
+void start(scene_t scene);
 
-sprite_t create_sprite(image_t sprite, bool free_image);
-void clear_sprite(sprite_t image);
 void draw(sprite_t sprite);
 
 #endif
