@@ -12,5 +12,6 @@ typedef struct sprite {
 
 sprite_t create_sprite(image_t sprite, int free_image);
 void clear_sprite(sprite_t image);
+void resize_sprite(sprite_t * sprite, int width, int height);
 
 #endif

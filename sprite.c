@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <math.h>
 
 #include "sprite.h"
 #include "color.h"
@@ -32,3 +33,25 @@ sprite_t create_sprite(image_t image, int free_image) {
 }
 
 void clear_sprite(sprite_t image) { free(image.data); }
+
+void resize_sprite(sprite_t * sprite, int width, int height)
+{
+  unsigned int * new_data = malloc(sizeof(unsigned int) * width * height);
+
+  int x_ratio = (int) ((sprite->width<<16) / width)+1;
+  int y_ratio = (int) ((sprite->height<<16) / height)+1;
+
+  for (int y = 0; y < height; y++) {
+    for (int x = 0; x < width; x++) {
+      int px = (x * x_ratio)>>16;
+      int py = (y * y_ratio)>>16;
+
+      new_data[x + y * width] = sprite->data[px + py * sprite->width];
+    }
+  }
+
+  clear_sprite(*sprite);
+  sprite->data = new_data;
+  sprite->height = height;
+  sprite->width = width;
+}
