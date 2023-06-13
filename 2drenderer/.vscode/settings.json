@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "sdl.h": "c",
+        "stb_image.h": "c"
+    }
+}

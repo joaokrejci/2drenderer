@@ -1,3 +1,4 @@
-renderer
-build/*.o
-lib/*.so
+**/*.o
+**/*.so
+**/*.a
+**/cmake-build-debug

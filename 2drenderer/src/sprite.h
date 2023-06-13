@@ -5,7 +5,6 @@
 #include "image.h"
 
 typedef struct sprite {
-  position_t position;
   int width, height;
   unsigned int *data;
 } sprite_t;

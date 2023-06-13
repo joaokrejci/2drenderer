@@ -1,5 +1,4 @@
 #include <SDL2/SDL.h>
-#include <math.h>
 
 #include "sprite.h"
 #include "color.h"

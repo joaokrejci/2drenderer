@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <time.h>
 
 #include "renderer.h"
@@ -22,10 +21,10 @@ void init() {
   surface = SDL_GetWindowSurface(window);
 }
 
-void draw(sprite_t sprite) {
-  bool out_of_bounds =
-      sprite.position.x < -sprite.width || sprite.position.x > surface->w ||
-      sprite.position.y < -sprite.height || sprite.position.y > surface->h;
+void draw(sprite_t sprite, position_t position) {
+  int out_of_bounds =
+      position.x < -sprite.width || position.x > surface->w ||
+      position.y < -sprite.height || position.y > surface->h;
 
   if (out_of_bounds)
     return;
@@ -33,17 +32,15 @@ void draw(sprite_t sprite) {
   unsigned int *pixels = surface->pixels;
 
   for (int y = 0; y < sprite.height; y++) {
-    for (int x = 0; x < sprite.width; x++) {
-      int pixel_pos =
-          (x + sprite.position.x) + (y + sprite.position.y) * surface->w;
+      int line_pos = position.x + (y + position.y) * surface->w;
+      int offset = position.x >= 0 ? 0 : 0 - position.x;
+      int line_length = sprite.width;
 
-      if (x < -sprite.position.x || y < -sprite.position.y || x > surface->w ||
-          y > surface->h) {
-        continue;
+      if(position.x + sprite.width > surface->w) {
+          line_length = surface->w - position.x;
       }
 
-      pixels[pixel_pos] = sprite.data[x + y * sprite.width];
-    }
+      memcpy(pixels + line_pos, sprite.data + y * sprite.width + offset, line_length * sizeof (int));
   }
 }
 
@@ -79,7 +76,10 @@ void start(scene_t scene) {
     }
 
     SDL_UpdateWindowSurface(window);
-    SDL_FillRect(surface, NULL, 0);
+
+    if (scene.flags & FLAG_CLEAR_BACKGROUND) {
+      SDL_FillRect(surface, NULL, 0);
+    }
 
     fps();
   }

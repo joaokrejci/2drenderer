@@ -1,6 +1,12 @@
 {
     "files.associations": {
-        "sdl.h": "c",
-        "stb_image.h": "c"
+        "*.tcc": "c",
+        "complex": "c",
+        "fstream": "c",
+        "iomanip": "c",
+        "istream": "c",
+        "ostream": "c",
+        "*.rh": "c",
+        "check.h": "c"
     }
 }
