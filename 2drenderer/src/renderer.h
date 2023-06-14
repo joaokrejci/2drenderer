@@ -4,6 +4,7 @@
 #include <SDL2/SDL.h>
 #include "image.h"
 #include "sprite.h"
+#include "animated_sprite.h"
 
 #define FLAG_CLEAR_BACKGROUND 0x01
 
@@ -20,5 +21,6 @@ void init();
 void start(scene_t scene);
 
 void draw(sprite_t sprite, position_t position);
+void draw_animated(animated_sprite_t animated_sprite, position_t position);
 
 #endif

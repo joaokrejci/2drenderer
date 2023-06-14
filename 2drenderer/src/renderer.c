@@ -21,27 +21,41 @@ void init() {
   surface = SDL_GetWindowSurface(window);
 }
 
+void draw_primitive(sprite_t sprite, position_t position, unsigned int frame_offset, size_2d_t frame_size) {
+    int out_of_bounds =
+            position.x < -frame_size.width || position.x > surface->w ||
+            position.y < -frame_size.height || position.y > surface->h;
+
+    if (out_of_bounds)
+        return;
+
+    unsigned int *pixels = surface->pixels;
+
+    for (int y = 0; y < frame_size.height; y++) {
+        int line_pos = position.x + (y + position.y) * surface->w;
+        int offset = position.x >= 0 ? 0 : 0 - position.x;
+        unsigned int line_length = frame_size.width;
+
+        if(position.x + frame_size.width > surface->w) {
+            line_length = surface->w - position.x;
+        }
+
+        memcpy(
+                pixels + line_pos,
+                sprite.data + frame_offset + y * sprite.width + offset,
+                line_length * sizeof (int)
+                );
+    }
+}
+
 void draw(sprite_t sprite, position_t position) {
-  int out_of_bounds =
-      position.x < -sprite.width || position.x > surface->w ||
-      position.y < -sprite.height || position.y > surface->h;
+    size_2d_t sprite_size = {sprite.width, sprite.height};
+    draw_primitive(sprite, position, 0, sprite_size);
+}
 
-  if (out_of_bounds)
-    return;
-
-  unsigned int *pixels = surface->pixels;
-
-  for (int y = 0; y < sprite.height; y++) {
-      int line_pos = position.x + (y + position.y) * surface->w;
-      int offset = position.x >= 0 ? 0 : 0 - position.x;
-      int line_length = sprite.width;
-
-      if(position.x + sprite.width > surface->w) {
-          line_length = surface->w - position.x;
-      }
-
-      memcpy(pixels + line_pos, sprite.data + y * sprite.width + offset, line_length * sizeof (int));
-  }
+void draw_animated(animated_sprite_t animated_sprite, position_t position) {
+    int frame_offset = animated_sprite.current_frame * animated_sprite.frame_size.width;
+    draw_primitive(animated_sprite.sprite, position, frame_offset, animated_sprite.frame_size);
 }
 
 static void fps() {
@@ -66,8 +80,8 @@ void start(scene_t scene) {
 
   SDL_Event event;
   while (event.type != SDL_QUIT) {
-    SDL_PollEvent(&event);
-    if (scene.event_handler != NULL) {
+    int poll_result = SDL_PollEvent(&event);
+    if (scene.event_handler != NULL && poll_result) {
       scene.event_handler(event);
     }
 
