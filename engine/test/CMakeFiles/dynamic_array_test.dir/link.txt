@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/dynamic_array_test.dir/dynamic_array_test.c.o CMakeFiles/dynamic_array_test.dir/home/joao/Projects/sandbox/plateau/engine/src/dynamic_array.c.o -o dynamic_array_test  -lcheck 

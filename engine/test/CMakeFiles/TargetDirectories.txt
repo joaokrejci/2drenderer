@@ -1,3 +1,0 @@
-/home/joao/Projects/sandbox/plateau/engine/test/CMakeFiles/dynamic_array_test.dir
-/home/joao/Projects/sandbox/plateau/engine/test/CMakeFiles/edit_cache.dir
-/home/joao/Projects/sandbox/plateau/engine/test/CMakeFiles/rebuild_cache.dir
