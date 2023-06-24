@@ -2,11 +2,11 @@
 #define GAME_OBJECT_H
 
 #include "../../2drenderer/src/sprite.h"
-#include "geometry.h"
+#include "../../math/src/geometry.h"
 
 typedef struct game_object {
     sprite_t sprite;
-    position_t position;
+    point_t position;
     unsigned int width;
     unsigned int height;
 } game_object_t;

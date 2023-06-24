@@ -2,7 +2,6 @@
 #define PLATEAU_ANIMATED_SPRITE_H
 
 #include "sprite.h"
-#include "position.h"
 
 typedef struct animated_sprite {
     size_2d_t frame_size;

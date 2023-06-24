@@ -5,12 +5,13 @@
 #include "image.h"
 #include "sprite.h"
 #include "animated_sprite.h"
+#include "../../math/src/geometry.h"
 
 #define FLAG_CLEAR_BACKGROUND 0x01
 
 typedef struct scene {
   void (*load)(void);
-  void (*loop)(void);
+  void (*loop)(double delta);
   void (*event_handler)(SDL_Event event);
   void (*unload)(void);
 
@@ -20,7 +21,7 @@ typedef struct scene {
 void init();
 void start(scene_t scene);
 
-void draw(sprite_t sprite, position_t position);
-void draw_animated(animated_sprite_t animated_sprite, position_t position);
+void draw(sprite_t sprite, point_t position);
+void draw_animated(animated_sprite_t animated_sprite, point_t position);
 
 #endif

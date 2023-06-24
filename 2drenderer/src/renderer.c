@@ -8,6 +8,7 @@ SDL_Surface *surface;
 SDL_Window *window;
 
 time_t instant;
+clock_t frame_instant;
 long fps_counter;
 
 void init() {
@@ -21,7 +22,7 @@ void init() {
   surface = SDL_GetWindowSurface(window);
 }
 
-void draw_primitive(sprite_t sprite, position_t position, unsigned int frame_offset, size_2d_t frame_size) {
+static void draw_primitive(sprite_t sprite, point_t position, unsigned int frame_offset, size_2d_t frame_size) {
     int out_of_bounds =
             position.x < -frame_size.width || position.x > surface->w ||
             position.y < -frame_size.height || position.y > surface->h;
@@ -48,12 +49,12 @@ void draw_primitive(sprite_t sprite, position_t position, unsigned int frame_off
     }
 }
 
-void draw(sprite_t sprite, position_t position) {
+void draw(sprite_t sprite, point_t position) {
     size_2d_t sprite_size = {sprite.width, sprite.height};
     draw_primitive(sprite, position, 0, sprite_size);
 }
 
-void draw_animated(animated_sprite_t animated_sprite, position_t position) {
+void draw_animated(animated_sprite_t animated_sprite, point_t position) {
     int frame_offset = animated_sprite.current_frame * animated_sprite.frame_size.width;
     draw_primitive(animated_sprite.sprite, position, frame_offset, animated_sprite.frame_size);
 }
@@ -70,9 +71,17 @@ static void fps() {
   }
 }
 
+static double delta() {
+    clock_t new_instant = clock();
+    double delta_time = ((double)(new_instant - frame_instant))/CLOCKS_PER_SEC;
+    frame_instant = new_instant;
+    return delta_time;
+}
+
 void start(scene_t scene) {
   instant = time(NULL);
   fps_counter = 0;
+  frame_instant = clock();
 
   if (scene.load != NULL) {
     scene.load();
@@ -86,7 +95,7 @@ void start(scene_t scene) {
     }
 
     if (scene.loop != NULL) {
-      scene.loop();
+      scene.loop(delta());
     }
 
     SDL_UpdateWindowSurface(window);

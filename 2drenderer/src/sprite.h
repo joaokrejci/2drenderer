@@ -1,7 +1,7 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "position.h"
+#include "size_2d.h"
 #include "image.h"
 
 typedef struct sprite {

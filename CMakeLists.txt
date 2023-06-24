@@ -5,8 +5,10 @@ add_executable(plateau main.c)
 
 add_subdirectory(2drenderer)
 add_subdirectory(engine)
+add_subdirectory(game)
+add_subdirectory(math)
 
-target_link_libraries(plateau PUBLIC 2drenderer engine m SDL2)
+target_link_libraries(plateau PUBLIC 2drenderer engine game m math SDL2)
 
 target_include_directories(plateau PUBLIC
                             "${PROJECT_BINARY_DIR}"
