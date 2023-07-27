@@ -1,12 +1,5 @@
 #include "dynamic_entity.h"
 
-dynamic_entity_t create_dynamic_entity(sprite_t sprite, vec2_t position, vec2_t velocity) {
-    dynamic_entity_t dynamic_entity = {
-            sprite, position, velocity
-    };
-    return dynamic_entity;
-}
-
 void move_dynamic_entity(dynamic_entity_t * entity, double delta) {
     entity->position.x += (float) delta * entity->velocity.x;
     entity->position.y += (float) delta * entity->velocity.y;

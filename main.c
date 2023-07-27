@@ -1,4 +1,5 @@
 #include "2drenderer/src/renderer.h"
+#include "2drenderer/src/animated_sprite.h"
 #include "math/src/geometry.h"
 #include "game/src/dynamic_entity.h"
 #include "game/src/dot.h"
@@ -6,24 +7,42 @@
 #define PLAYER_SPEED 150 // pixels/second
 #define DOTS_AMOUNT 20
 
-struct dot dots[DOTS_AMOUNT];
+static struct dot dots[DOTS_AMOUNT];
+static int dots_index = 0;
 
-int dots_index = 0;
-
-dynamic_entity_t player;
+static dynamic_entity_t player;
+static sprite_t background;
+static camera_t * camera;
 
 void load() {
-    player.position = (vec2_t) {100,100};
-    player.velocity = (vec2_t) {0,0};
-    player.sprite = create_sprite(load_image("../assets/player.png"), 1);
-    resize_sprite(&player.sprite, player.sprite.width * 2, player.sprite.height * 2);
+    camera = camera_viewport();
+    camera->position = vec2(200, 0);
 
-    dot_entity_prototype.sprite = create_sprite(load_image("../assets/dot.png"), 1);
+    player.position = (vec2_t) {450,200};
+    player.velocity = (vec2_t) {0,0};
+
+    image_t background_image = load_image("../assets/background_island.png");
+    image_t player_image = load_image("../assets/stealthman.png");
+    image_t dot_image = load_image("../assets/dot.png");
+
+    background = create_sprite(background_image);
+    sprite_t player_sprite = create_sprite(player_image);
+    sprite_t dot_sprite = create_sprite(dot_image);
+
+    resize_sprite(&player_sprite, 10 * player_sprite.width,  10 * player_sprite.height);
+
+    player.sprite = create_animated_sprite(player_sprite, player_sprite.width / 2, player_sprite.height, 4);
+    dot_entity_prototype.sprite = create_animated_sprite(dot_sprite, 16, 16, 1);
+
+    free_image(background_image);
+    free_image(player_image);
+    free_image(dot_image);
 }
 
 void unload() {
-    clear_sprite(player.sprite);
-    clear_sprite(dot_entity_prototype.sprite);
+    clear_sprite(background);
+    clear_sprite(dot_entity_prototype.sprite.sprite);
+    clear_sprite(player.sprite.sprite);
 }
 
 void move_dots(double delta) {
@@ -38,9 +57,10 @@ void loop(double delta) {
     move_dynamic_entity(&player, delta);
     move_dots(delta);
 
-    draw(player.sprite, point_from_vec2(player.position));
+    draw(background, vec2(0,0), 0);
+    draw_animated(&player.sprite, player.position, 0);
     for (int i = 0; i < dots_index; i++) {
-        draw(dots[i].entity.sprite, point_from_vec2(dots[i].entity.position));
+        draw_animated(&dots[i].entity.sprite, dots[i].entity.position, 1);
     }
 }
 
@@ -77,11 +97,12 @@ void player_input_handler(SDL_Event *event) {
 
 void dots_input_handler(SDL_Event *event) {
     if ((*event).button.type == SDL_MOUSEBUTTONDOWN && (*event).button.button == SDL_BUTTON_LEFT) {
-        point_t destination = {
+        point_t destination_on_camera = {
                 (*event).button.x,
                 (*event).button.y
         };
-        dots[dots_index] = spawn_dot(player.position, destination);
+        vec2_t world_destination = canvas_to_world_position(destination_on_camera);
+        dots[dots_index] = spawn_dot(player.position, point_from_vec2(world_destination));
         dots_index = (dots_index + 1)%DOTS_AMOUNT;
     }
 }
@@ -99,7 +120,7 @@ int main() {
     scene.unload = unload;
     scene.loop = loop;
     scene.event_handler = event_handler;
-    scene.flags = FLAG_CLEAR_BACKGROUND;
+    scene.flags = 0;
 
     start(scene);
 }
