@@ -10,4 +10,4 @@ image_t load_image(const char *path) {
   return sprite;
 }
 
-void unload_image(image_t image) { stbi_image_free(image.data); }
+void free_image(image_t image) { stbi_image_free(image.data); }

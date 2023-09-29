@@ -16,9 +16,9 @@ static camera_t * camera;
 
 void load() {
     camera = camera_viewport();
-    camera->position = vec2(200, 0);
+    camera->position = vec2(0, 0);
 
-    player.position = (vec2_t) {450,200};
+    player.position = (vec2_t) {200,0};
     player.velocity = (vec2_t) {0,0};
 
     image_t background_image = load_image("../assets/background_island.png");
@@ -29,10 +29,11 @@ void load() {
     sprite_t player_sprite = create_sprite(player_image);
     sprite_t dot_sprite = create_sprite(dot_image);
 
-    resize_sprite(&player_sprite, 10 * player_sprite.width,  10 * player_sprite.height);
+    resize_sprite(&player_sprite, 2 * player_sprite.width, 2 * player_sprite.height);
+    resize_sprite(&dot_sprite, 2 * dot_sprite.width, 2 *  dot_sprite.height);
 
     player.sprite = create_animated_sprite(player_sprite, player_sprite.width / 2, player_sprite.height, 4);
-    dot_entity_prototype.sprite = create_animated_sprite(dot_sprite, 16, 16, 1);
+    dot_entity_prototype.sprite = create_animated_sprite(dot_sprite, dot_sprite.width / 2, dot_sprite.height, 5);
 
     free_image(background_image);
     free_image(player_image);
@@ -58,7 +59,7 @@ void loop(double delta) {
     move_dots(delta);
 
     draw(background, vec2(0,0), 0);
-    draw_animated(&player.sprite, player.position, 0);
+    draw_animated(&player.sprite, player.position, 1);
     for (int i = 0; i < dots_index; i++) {
         draw_animated(&dots[i].entity.sprite, dots[i].entity.position, 1);
     }

@@ -9,7 +9,7 @@ typedef struct sprite {
   unsigned int *data;
 } sprite_t;
 
-sprite_t create_sprite(image_t sprite, int free_image);
+sprite_t create_sprite(image_t sprite);
 void clear_sprite(sprite_t image);
 void resize_sprite(sprite_t * sprite, int width, int height);
 

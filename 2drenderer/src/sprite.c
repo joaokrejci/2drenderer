@@ -6,10 +6,10 @@
 extern SDL_Surface * surface;
 
 static unsigned int map_rgba(color_t *color) {
-  return SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
+    return SDL_MapRGBA(surface->format, color->r, color->g, color->b, color->a);
 }
 
-sprite_t create_sprite(image_t image, int free_image) {
+sprite_t create_sprite(image_t image) {
   sprite_t sprite;
   sprite.width = image.width;
   sprite.height = image.height;
@@ -22,10 +22,6 @@ sprite_t create_sprite(image_t image, int free_image) {
       sprite.data[pos] = map_rgba(current_color);
       current_color++;
     }
-  }
-
-  if (free_image) {
-    unload_image(image);
   }
 
   return sprite;

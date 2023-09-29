@@ -8,6 +8,6 @@ typedef struct image {
 } image_t;
 
 image_t load_image(const char *path);
-void unload_image(image_t image);
+void free_image(image_t image);
 
 #endif

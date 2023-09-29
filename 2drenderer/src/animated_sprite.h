@@ -2,6 +2,7 @@
 #define PLATEAU_ANIMATED_SPRITE_H
 
 #include "sprite.h"
+#include <time.h>
 
 typedef struct animated_sprite {
     size_2d_t frame_size;
@@ -9,6 +10,7 @@ typedef struct animated_sprite {
     unsigned int current_frame;
     unsigned int frames;
     unsigned int fps;
+    clock_t _last_frame_step;
 } animated_sprite_t;
 
 animated_sprite_t create_animated_sprite(sprite_t sprite, int frame_width, int frame_height, unsigned int fps);
