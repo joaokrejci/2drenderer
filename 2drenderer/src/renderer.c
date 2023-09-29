@@ -13,6 +13,9 @@ static long fps_counter;
 static double delta_time = 1;
 
 static camera_t camera;
+static unsigned int *get_pixels() {
+    return (unsigned int *) surface->pixels;
+}
 
 void init() {
     SDL_Init(SDL_INIT_VIDEO);
@@ -47,23 +50,45 @@ vec2_t canvas_to_world_position(point_t canvas_position) {
     );
 }
 
-static void draw_line(sprite_t *sprite, unsigned int *pixels, int horizontal_length, unsigned int source_position,
+static void draw_line(sprite_t *sprite, int horizontal_length, unsigned int source_position,
                       unsigned int dest_position) {
     memcpy(
-            pixels + dest_position,
+            get_pixels() + dest_position,
             (*sprite).data + source_position,
             horizontal_length * sizeof(unsigned int)
     );
 }
 
+static color_t get_alpha_reduced_color(color_t * channels, float alpha_percentage) {
+    color_t new_color = {
+            channels->r * alpha_percentage,
+            channels->g * alpha_percentage,
+            channels->b * alpha_percentage,
+            0xff};
+    return new_color;
+}
+
 static void
-draw_line_with_alpha(sprite_t *sprite, unsigned int *pixels, int horizontal_length, unsigned int source_position,
+draw_line_with_alpha(sprite_t *sprite, int horizontal_length, unsigned int source_position,
                      unsigned int dest_position) {
     for (int x = 0; x < horizontal_length; x++) {
-        unsigned int source = (*sprite).data[source_position + x];
-        if (source) {
-            pixels[dest_position + x] = source;
-        }
+        color_t * source = (color_t *) &(sprite->data[source_position + x]);
+        if (!source->a) continue;
+
+        float alpha_percentage = source->a / 0xff;
+        color_t source_reduced = get_alpha_reduced_color(source, alpha_percentage);
+
+        color_t * destination = (color_t *) &(get_pixels()[dest_position + x]);
+        color_t dest_reduced = get_alpha_reduced_color(destination, 1 - alpha_percentage);
+
+        color_t new_color = {
+                source_reduced.r + dest_reduced.r,
+                source_reduced.g + dest_reduced.g,
+                source_reduced.b + dest_reduced.b,
+                0xff
+        };
+
+        get_pixels()[dest_position + x] = *((unsigned int *) &new_color);
     }
 }
 
@@ -74,14 +99,11 @@ draw_primitive(sprite_t sprite, vec2_t world_position, unsigned int frame_offset
     rect2_t camera_rect = rect(vec2(0, 0), vec2((float) surface->w, (float) surface->h));
     rect2_t render_rect = rect2_intersection(sprite_rect, camera_rect);
 
-    unsigned int *pixels = surface->pixels;
-
     point_t render_position = point_from_vec2(render_rect.position);
     int vertical_length = (int) render_rect.size.y;
     int horizontal_length = (int) render_rect.size.x;
     int vertical_offset = position.y > 0 ? 0 : -position.y;
     int horizontal_offset = position.x > 0 ? 0 : -position.x;
-
 
     for (int y = 0; y < vertical_length; y++) {
         unsigned int source_position =
@@ -93,9 +115,9 @@ draw_primitive(sprite_t sprite, vec2_t world_position, unsigned int frame_offset
                 + (render_position.y + y) * (int) camera_rect.size.x;
 
         if (alpha) {
-            draw_line_with_alpha(&sprite, pixels, horizontal_length, source_position, dest_position);
+            draw_line_with_alpha(&sprite, horizontal_length, source_position, dest_position);
         } else {
-            draw_line(&sprite, pixels, horizontal_length, source_position, dest_position);
+            draw_line(&sprite, horizontal_length, source_position, dest_position);
         }
     }
 }
